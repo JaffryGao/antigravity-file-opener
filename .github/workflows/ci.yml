@@ -1,0 +1,83 @@
+name: Cross-Platform Build & Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  macos-verify:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run frontend cross-platform path tests
+        run: node Tests/frontend-path.test.mjs
+      - name: Check JS syntax
+        run: node --check frontend/file-opener-snippet.js && node --check sync-custom-js.mjs
+      - name: Build and run macOS Swift tests
+        run: |
+          chmod +x build.sh install-service.sh uninstall.sh
+          ./build.sh
+
+  windows-verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run frontend cross-platform path tests
+        run: node Tests/frontend-path.test.mjs
+      - name: Check JS syntax
+        run: node --check frontend/file-opener-snippet.js && node --check sync-custom-js.mjs
+      - name: Build and run Windows C# tests
+        shell: pwsh
+        run: ./windows/build.ps1
+      - name: Smoke test Windows local loopback service
+        shell: pwsh
+        run: |
+          $exe = Join-Path $PWD "build\AntigravityFileOpener.exe"
+          $proc = Start-Process -FilePath $exe -ArgumentList "--silent" -PassThru
+          try {
+            $ok = $false
+            for ($i = 0; $i -lt 20; $i++) {
+              Start-Sleep -Milliseconds 250
+              try {
+                $health = Invoke-RestMethod -Uri "http://127.0.0.1:59321/health" -TimeoutSec 2
+                if ($health.ok -eq $true) { $ok = $true; break }
+              } catch {}
+            }
+            if (-not $ok) { throw "Health endpoint did not become ready" }
+
+            # Verify 401 without token
+            try {
+              Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:59321/open" `
+                -ContentType "application/json" -Body '{"path":"C:\\Windows"}' -ErrorAction Stop
+              throw "Expected 401"
+            } catch {
+              if ($_.Exception.Response.StatusCode.value__ -ne 401) { throw }
+            }
+
+            # Verify 403 for untrusted external origin
+            try {
+              Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:59321/open" `
+                -Headers @{ Origin = "https://evil.example" } `
+                -ContentType "application/json" -Body '{"path":"C:\\Windows"}' -ErrorAction Stop
+              throw "Expected 403"
+            } catch {
+              if ($_.Exception.Response.StatusCode.value__ -ne 403) { throw }
+            }
+
+            # Verify 404 for nonexistent path with valid token
+            $token = (Get-Content (Join-Path $env:USERPROFILE ".config\antigravity-file-opener\token") -Raw).Trim()
+            try {
+              Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:59321/open" `
+                -Headers @{ Origin = "http://127.0.0.1:5387"; "X-Agy-Token" = $token } `
+                -ContentType "application/json" -Body '{"path":"C:\\not-exist-99999.md"}' -ErrorAction Stop
+              throw "Expected 404"
+            } catch {
+              if ($_.Exception.Response.StatusCode.value__ -ne 404) { throw }
+            }
+
+            Write-Host "✅ Windows 端到端冒烟验证通过 (health=200, no-token=401, evil-origin=403, missing-path=404)"
+          } finally {
+            if ($proc -and -not $proc.HasExited) { Stop-Process -Id $proc.Id -Force }
+          }

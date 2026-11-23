@@ -5,8 +5,8 @@
 <h1>Antigravity File Opener</h1>
 
 <p>
-  Native macOS <strong>Liquid Glass</strong> context menu &amp; <code>⌘ + Click</code> external file opener for <strong>Antigravity 2.0</strong> chat file pills<br />
-  Zero client binary patching · No Accessibility permissions required · Compatible with <code>theme-patch</code> &amp; <code>context-viewer</code>
+  Native system context menu &amp; quick external file opener for <strong>Antigravity 2.0</strong> chat file pills on <strong>macOS &amp; Windows</strong><br />
+  Zero client binary patching · No admin or Accessibility permissions · Compatible with <code>theme-patch</code> &amp; <code>context-viewer</code>
 </p>
 
 <p>
@@ -15,19 +15,22 @@
 
 <p>
   <img src="https://img.shields.io/badge/macOS-13%2B-000000?style=flat&logo=apple&logoColor=white" alt="macOS 13+" />
-  <img src="https://img.shields.io/badge/Arch-Apple%20Silicon%20%26%20Intel-3A3A3C?style=flat" alt="Apple Silicon & Intel" />
+  <img src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078D6?style=flat&logo=windows&logoColor=white" alt="Windows 10/11" />
   <img src="https://img.shields.io/badge/Target-Antigravity%202.0-1A73E8?style=flat&logo=google&logoColor=white" alt="Antigravity 2.0" />
-  <img src="https://img.shields.io/badge/Menu-Native%20Liquid%20Glass%20NSMenu-0A84FF?style=flat" alt="Native Liquid Glass NSMenu" />
-  <img src="https://img.shields.io/badge/Permissions-Zero%20Accessibility%20Needed-10B981?style=flat" alt="Zero Accessibility Needed" />
+  <img src="https://img.shields.io/badge/Menu-Native%20NSMenu%20%2F%20Win32-0A84FF?style=flat" alt="Native Menu" />
+  <img src="https://img.shields.io/badge/Permissions-Zero%20Admin%20%2F%20Accessibility-10B981?style=flat" alt="Zero Permissions" />
+  <a href="https://github.com/JaffryGao/antigravity-file-opener/actions/workflows/ci.yml">
+    <img src="https://github.com/JaffryGao/antigravity-file-opener/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+  </a>
 </p>
 
 <p>
   <img src="https://img.shields.io/badge/Swift-6-F05138?style=flat&logo=swift&logoColor=white" alt="Swift" />
+  <img src="https://img.shields.io/badge/C%23-.NET%20Win32%20(Zero%20SDK)-512BD4?style=flat&logo=dotnet&logoColor=white" alt="C# Win32" />
   <img src="https://img.shields.io/badge/AppKit-NSWorkspace%20%26%20NSMenu-0071E3?style=flat" alt="AppKit" />
-  <img src="https://img.shields.io/badge/IPC-POSIX%20127.0.0.1-4F46E5?style=flat" alt="POSIX Loopback" />
+  <img src="https://img.shields.io/badge/IPC-Loopback%20127.0.0.1-4F46E5?style=flat" alt="Loopback 127.0.0.1" />
   <img src="https://img.shields.io/badge/JavaScript-DOM%20Capture-F7DF1E?style=flat&logo=javascript&logoColor=000000" alt="JavaScript" />
   <img src="https://img.shields.io/badge/Node.js-Sync%20CLI-339933?style=flat&logo=nodedotjs&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/Daemon-macOS%20LaunchAgent-64748B?style=flat" alt="LaunchAgent" />
 </p>
 
 <br />
@@ -38,73 +41,83 @@
 
 ---
 
-## One-Click AI Install Prompt (Copy & Paste to Your Agent)
+## One-Click AI Install Prompt (macOS & Windows Auto-Detect)
 
-Click the **Copy** button in the top-right corner of the code block below and paste it into **Antigravity / Claude Code / Codex** to automatically check prerequisites, clone, build, install, and verify:
+Click the **Copy** button in the top-right corner below and paste it into **Antigravity / Claude Code / Codex** to automatically detect your OS, check prerequisites, build, install, and verify:
 
 ```text
-Please install and enable https://github.com/JaffryGao/antigravity-file-opener (native macOS context menu and Cmd+Click external file opening for Antigravity chat file pills):
+Please install and enable https://github.com/JaffryGao/antigravity-file-opener (native OS context menu and quick external file opening for Antigravity chat file pills on macOS and Windows):
 
-1. Check local prerequisites: confirm macOS 13+, verify `swiftc` (Xcode Command Line Tools) and `node` are available, and check that `~/.gemini/antigravity/theme-patch/user/custom.js` exists with `"customJs": true` in `theme-patch/user/config.json`. If anything is missing, tell me how to install/enable it first.
-2. Clone the repository to `~/antigravity-file-opener` (or pull latest if it already exists):
+1. Detect the current OS (macOS or Windows) and check prerequisites:
+   - Common: `node` is available, and `~/.gemini/antigravity/theme-patch/user/custom.js` (Windows: `%USERPROFILE%\.gemini\antigravity\theme-patch\user\custom.js`) exists with `"customJs": true` in `theme-patch/user/config.json`.
+   - macOS: macOS 13+ and `swiftc` (Xcode Command Line Tools).
+   - Windows: Windows 10/11 (uses built-in `.NET Framework csc.exe`, no extra SDK required).
+   If anything is missing, explain how to install/enable it before proceeding.
+2. Clone the repo to `~/antigravity-file-opener` (Windows: `%USERPROFILE%\antigravity-file-opener`, or pull latest if already cloned):
    git clone https://github.com/JaffryGao/antigravity-file-opener.git ~/antigravity-file-opener
-3. Build, install to `/Applications/AntigravityFileOpener.app`, register the silent LaunchAgent, and sync the frontend snippet:
-   cd ~/antigravity-file-opener && chmod +x build.sh install-service.sh uninstall.sh && ./install-service.sh
+3. Run the platform installer:
+   - macOS:
+     cd ~/antigravity-file-opener && chmod +x build.sh install-service.sh uninstall.sh && ./install-service.sh
+   - Windows (PowerShell):
+     cd "$env:USERPROFILE\antigravity-file-opener"; powershell -ExecutionPolicy Bypass -File .\windows\install-service.ps1
 4. Verify the installation:
-   - Confirm all 17 unit tests and code signing passed;
-   - Run `curl -sS http://127.0.0.1:59321/health` and confirm `{"ok":true,"service":"AntigravityFileOpener"}`;
-   - Confirm the `launchctl` job is `running` and `/tmp/antigravity-file-opener.err` is empty;
-   - Confirm `~/.gemini/antigravity/theme-patch/user/custom.js` passes `node --check` and hot-reloaded in `theme-patch`.
-5. Summarize how to test (`⌘ + Click` and `Right-Click` on any chat file pill) and how to uninstall (`~/antigravity-file-opener/uninstall.sh`).
+   - Confirm unit tests and build passed;
+   - Verify `http://127.0.0.1:59321/health` returns `{"ok":true,"service":"AntigravityFileOpener"}`;
+   - Confirm `theme-patch/user/custom.js` passes syntax checks and hot-reloaded.
+5. Tell me how to test (`⌘ + Click` / `Right-Click` on macOS, `Ctrl + Click` / `Right-Click` on Windows) and the uninstall script path.
 ```
 
-### Manual Quick Install (Terminal)
+### Manual Quick Install
 
-```zsh
-git clone https://github.com/JaffryGao/antigravity-file-opener.git ~/antigravity-file-opener
-cd ~/antigravity-file-opener
-chmod +x build.sh install-service.sh uninstall.sh
-./install-service.sh
-```
+- **macOS (Terminal)**:
+  ```zsh
+  git clone https://github.com/JaffryGao/antigravity-file-opener.git ~/antigravity-file-opener
+  cd ~/antigravity-file-opener
+  chmod +x build.sh install-service.sh uninstall.sh
+  ./install-service.sh
+  ```
 
-> **No Antigravity restart** and **no Accessibility permission prompts** required. Changes hot-reload in ~1–2 seconds and persist automatically across app restarts and system reboots.
+- **Windows 10 / 11 (PowerShell — No Admin Rights, No .NET SDK Needed)**:
+  ```powershell
+  git clone https://github.com/JaffryGao/antigravity-file-opener.git "$env:USERPROFILE\antigravity-file-opener"
+  cd "$env:USERPROFILE\antigravity-file-opener"
+  powershell -ExecutionPolicy Bypass -File .\windows\install-service.ps1
+  ```
+
+> **No Antigravity restart**, **no admin privileges**, and **no Accessibility permission prompts** required. Hot-reloads in ~1–2 seconds and persists across app restarts and system reboots.
 
 ---
 
-## Key Features
+## Feature Parity (macOS & Windows)
 
-| Action | Behavior |
-| :--- | :--- |
-| **`⌘ + Left-Click` on a file/folder pill** | Prevents in-app preview and immediately opens the target in its macOS default app via `NSWorkspace` (opens folders in Finder) |
-| **`Right-Click` on a file/folder pill** | Replaces the single-"Copy" popup with a genuine **AppKit native `NSMenu`** featuring macOS Liquid Glass translucency |
-| **Native Context Menu Items** | File icon, filename & shortened directory header; **Open with Default App** (with native `⌘单击` badge on macOS 14+), **Open With ›** submenu (lists all registered macOS apps with real app icons, default app pinned first), **Reveal in Finder**, **Copy Full Path**, and **Copy Filename** |
-| **`⌥ + Right-Click` on a file pill** | Escape hatch to access Antigravity's original context menu whenever needed |
-| **Hover over a file pill** | Mirrors `data-uri` to the standard HTML `title` attribute so hovering previews the full decoded local path |
-| **Web links, plugin pills & inputs** | Strict protocol allowlist ensures normal links, sidecar pills, and text editors pass through untouched |
+| Action | macOS | Windows 10 / 11 |
+| :--- | :--- | :--- |
+| **Quick Default App Open** | **`⌘ + Left-Click`** on file/folder pill → opens in macOS default app via `NSWorkspace` | **`Ctrl + Left-Click`** on file/folder pill → opens in Windows default app via `ShellExecute` |
+| **Native Context Menu** | **`Right-Click`** → genuine AppKit **`NSMenu`** (Finder Liquid Glass style) | **`Right-Click`** → native Win32/WinForms menu (Win11 DWM rounded corners + auto dark/light theme) |
+| **Open With** | **Open With ›** submenu listing all registered apps with real icons | **Open With…** invoking native Windows `OpenAs_RunDLL` app chooser |
+| **Reveal Folder** | **Reveal in Finder** (highlights target) | **Show in File Explorer** (`SHOpenFolderAndSelectItems` with fallback to `explorer /select`) |
+| **Copy Path / Filename** | **Copy Full Path** / **Copy Filename** (restores focus) | **Copy Full Path** / **Copy Filename** (supports drive letters & `\\wsl.localhost\...` UNC paths) |
+| **Escape Hatch** | **`⌥ + Right-Click`** passes through to Antigravity's original menu | **`Alt + Right-Click`** passes through to Antigravity's original menu |
 
 ---
 
 ## Architecture
 
-A decoupled two-stage design combining **DOM capture interception** with a **silent native Swift loopback executor**:
+A decoupled cross-platform design pairing **capture-phase DOM interception** with a **platform-native loopback executor**:
 
 ```text
 Antigravity Renderer (~/.gemini/antigravity/theme-patch/user/custom.js)
-  ├─ ⌘ + Left-Click .inline-pill[data-uri] ──▶ POST http://127.0.0.1:59321/open
-  └─ Right-Click .inline-pill[data-uri]    ──▶ POST http://127.0.0.1:59321/menu
+  ├─ macOS: ⌘+Click / Windows: Ctrl+Click ──▶ POST http://127.0.0.1:59321/open
+  └─ Right-Click .inline-pill[data-uri]   ──▶ POST http://127.0.0.1:59321/menu
                                                       │
-                                                      ▼
-Background Native Service (/Applications/AntigravityFileOpener.app via LaunchAgent)
-  ├─ LocalActionServer.swift   127.0.0.1:59321 only (Origin allowlist + 0600 random local token)
-  ├─ FileLinkParser.swift      Decodes file:// URIs & local paths, strips #L / :line suffixes, checks existence
-  └─ ContextMenuPresenter.swift Pops up genuine AppKit NSMenu + "Open With ›" submenu via NSWorkspace
+                     ┌────────────────────────────────┴────────────────────────────────┐
+                     ▼                                                                 ▼
+  macOS Daemon (Swift / LaunchAgent)                         Windows Daemon (C# Win32 / HKCU Run)
+  ├─ /Applications/AntigravityFileOpener.app                 ├─ %LOCALAPPDATA%\AntigravityFileOpener\...exe
+  ├─ POSIX 127.0.0.1:59321 + 0600 random token               ├─ TcpListener 127.0.0.1:59321 + random token
+  ├─ AppKit NSMenu + Open With › submenu                     ├─ Win11 rounded dark/light menu + OpenAs_RunDLL
+  └─ NSWorkspace.open / activateFileViewerSelecting          └─ ShellExecute / SHOpenFolderAndSelectItems
 ```
-
-### Why not `CGEventTap` + macOS Accessibility?
-1. Antigravity renders chat file pills as `<span class="inline-pill" data-uri="...">`, and Chromium does not expose custom `data-*` attributes to the macOS Accessibility Tree.
-2. On modern macOS releases, global mouse `CGEventTap` hooks inside `LaunchAgent` daemons can be silently filtered by Input Monitoring policies or conflict with third-party mouse utilities (e.g., Mac Mouse Fix).
-
-Using DOM capture + a local Swift loopback service achieves **zero permission friction, zero latency, and 100% hit accuracy** without touching `Antigravity.app`.
 
 ---
 
@@ -112,52 +125,57 @@ Using DOM capture + a local Swift loopback service achieves **zero permission fr
 
 ```text
 antigravity-file-opener/
-├── README.md                        # Chinese documentation
-├── README.en.md                     # English documentation
+├── README.md / README.en.md         # Bilingual documentation
+├── .github/workflows/ci.yml         # macOS + Windows CI build & end-to-end loopback smoke tests
 ├── assets/
-│   ├── logo.png                     # Project logo
-│   └── preview.png                  # Native Liquid Glass menu screenshot
-├── build.sh                         # Runs unit tests, compiles & signs the .app (--install copies to /Applications)
-├── install-service.sh               # Builds, installs, registers LaunchAgent & syncs frontend snippet
-├── uninstall.sh                     # Cleanly removes LaunchAgent, .app, token & custom.js snippet
-├── sync-custom-js.mjs               # Safely injects/removes the frontend block in theme-patch/user/custom.js
+│   ├── logo.png                     # Custom Liquid Glass project logo
+│   └── preview.png                  # Native macOS context menu screenshot
 ├── frontend/
-│   └── file-opener-snippet.js       # Capture-phase DOM listener injected via theme-patch
-├── Sources/
-│   ├── main.swift                   # Single-instance accessory entrypoint (no Dock icon)
-│   ├── AppDelegate.swift            # Lifecycle, 32-byte random token management & silent mode (--silent)
-│   ├── LocalActionServer.swift      # Loopback-only POSIX HTTP server (/health /open /reveal /menu)
-│   ├── ContextMenuPresenter.swift   # Native AppKit NSMenu, macOS 14+ badge & Open With submenu
-│   └── FileLinkParser.swift         # Pure-logic path & file:// URI resolver
-└── Tests/
-    └── FileLinkParserTests.swift    # 17 unit tests covering Unicode, spaces, anchors & protocol filtering
+│   └── file-opener-snippet.js       # Cross-platform DOM listener (POSIX, Windows drives & WSL UNC)
+├── sync-custom-js.mjs               # Cross-platform injector/cleaner for theme-patch/user/custom.js
+├── Sources/                         # macOS native Swift sources
+├── Tests/
+│   ├── FileLinkParserTests.swift    # macOS unit tests (17 assertions)
+│   └── frontend-path.test.mjs       # Cross-platform frontend path tests (13 assertions)
+├── build.sh / install-service.sh / uninstall.sh
+└── windows/                         # Windows native C# sources (compiled with built-in csc.exe, zero SDK)
+    ├── FileLinkParser.cs            # Drive letter & WSL UNC path resolver
+    ├── LocalActionServer.cs         # Loopback-only TcpListener server (no admin URLACL needed)
+    ├── ContextMenuPresenter.cs      # Win11 rounded theme-aware menu + Win32 Shell APIs
+    ├── Program.cs                   # Single-instance Mutex + random token + silent entrypoint
+    ├── FileLinkParserTests.cs       # Windows unit tests (15 assertions)
+    └── build.ps1 / install-service.ps1 / uninstall.ps1
 ```
 
 ---
 
-## Requirements & Security
+## Security
 
-- **Requirements**: macOS 13+ (native badge requires macOS 14+), Xcode Command Line Tools (`xcode-select --install`), Node.js, and `theme-patch` enabled with `"customJs": true` in `~/.gemini/antigravity/theme-patch/user/config.json`.
-- **Untouched Host App**: Never unpacks or modifies `Antigravity.app` / `app.asar`; survives official Antigravity updates intact.
-- **Loopback-Only Binding**: Strictly binds to `INADDR_LOOPBACK (127.0.0.1:59321)` — unreachable from LAN or internet.
-- **Per-Machine Random Token + Origin Check**: Generates a 32-byte random secret at `~/.config/antigravity-file-opener/token` (`0600`), rejecting missing/invalid tokens (`401`) and external web origins (`403`).
-- **No Shell Execution**: Validates target existence on disk and delegates directly to Apple's `NSWorkspace` APIs — never invokes a shell.
+- **Untouched Host App**: Never modifies `Antigravity.app` / `Antigravity.exe` or `app.asar`; survives official updates.
+- **Loopback-Only Binding**: Strictly binds to `127.0.0.1:59321` (unreachable from LAN/internet; avoids Windows Firewall public prompts).
+- **Random Token + Origin Allowlist**: Generates a 32-byte per-machine token at `~/.config/antigravity-file-opener/token`, rejecting unauthorized (`401`) and external-origin (`403`) requests.
+- **Zero Shell Injection**: Validates target existence on disk and invokes native OS APIs directly.
 
 ---
 
 ## Troubleshooting & Uninstall
 
+### macOS
 ```zsh
-# Check LaunchAgent status
 launchctl print "gui/$(id -u)/com.antigravity.file-opener" | grep -E "state =|pid ="
-
-# Verify local service health (expects {"ok":true,"service":"AntigravityFileOpener"})
 curl -sS http://127.0.0.1:59321/health
-
-# Inspect logs
 cat /tmp/antigravity-file-opener.log
-cat /tmp/antigravity-file-opener.err
 
 # Completely uninstall
 ~/antigravity-file-opener/uninstall.sh
+```
+
+### Windows (PowerShell)
+```powershell
+Get-Process AntigravityFileOpener -ErrorAction SilentlyContinue
+Invoke-RestMethod http://127.0.0.1:59321/health
+Get-Content "$env:TEMP\antigravity-file-opener.log" -Tail 20
+
+# Completely uninstall
+powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\antigravity-file-opener\windows\uninstall.ps1"
 ```
